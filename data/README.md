@@ -1,10 +1,31 @@
-# Dados
+# Dados do projeto
 
-Esta pasta contém os conjuntos de dados utilizados no projeto de previsão de churn de clientes.
+Esta pasta reúne os conjuntos de dados utilizados nas etapas de análise, preparação e modelagem.
 
-Os dados estão separados em duas etapas:
+## Estrutura
 
-- `raw/`: dados originais, sem alterações;
-- `processed/`: dados tratados e preparados para análise.
+### `raw/`
 
-Os arquivos serão mantidos no formato CSV, pois o projeto será executado localmente.
+Contém os dados originais, preservados sem alterações.
+
+Arquivo:
+
+```text
+nps_clientes.csv
+```
+
+Base inicial utilizada para entendimento, validação, tratamento e análise exploratória.
+
+### `processed/`
+
+Contém os dados após as etapas de limpeza, validação e preparação.
+
+Arquivo:
+
+```text
+clientes_tratados.csv
+```
+
+Base utilizada nos notebooks de análise exploratória, modelos supervisionados e clusterização.
+
+> Os dados originais devem permanecer inalterados para garantir rastreabilidade e reprodutibilidade do projeto.
