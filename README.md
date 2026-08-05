@@ -1,50 +1,80 @@
-# Customer Satisfaction Analytics
+# Customer Intelligence — Predição de Detratores e Segmentação de Clientes
 
-Projeto de Ciência de Dados voltado à análise de satisfação de clientes, identificação de detratores e segmentação por nível de criticidade operacional.
+Projeto completo de Ciência de Dados aplicado à satisfação de clientes, combinando análise exploratória, engenharia de atributos, Machine Learning supervisionado, clusterização e uma aplicação interativa desenvolvida com Streamlit.
 
-A solução combina análise exploratória, engenharia de atributos, modelos supervisionados e técnicas de clusterização para transformar dados de pedidos, entrega, atendimento e reclamações em informações acionáveis para o negócio.
-
-> **Status do projeto:** em desenvolvimento.  
-> Os notebooks de análise, modelagem supervisionada e clusterização já foram estruturados. A pasta `src/` e algumas etapas de operacionalização ainda estão em evolução.
+A solução foi construída para transformar informações relacionadas ao perfil do cliente, pedidos, entrega, atendimento e reclamações em indicadores úteis para priorização, retenção e melhoria da experiência do consumidor.
 
 ---
 
 ## Visão geral
 
-A insatisfação de clientes pode estar relacionada a diferentes fatores, como atrasos na entrega, recorrência de reclamações, tempo de resolução e quantidade de contatos com o atendimento.
+A insatisfação de clientes pode estar associada a diferentes fatores operacionais, como atrasos na entrega, recorrência de reclamações, excesso de contatos com o atendimento e tempo elevado de resolução.
 
-Este projeto busca responder a duas perguntas complementares:
+Este projeto foi desenvolvido para responder a duas perguntas complementares:
 
 > Qual é a probabilidade de um cliente se tornar detrator?
 
-> Quais perfis de clientes apresentam padrões semelhantes de comportamento e criticidade?
+> Quais perfis de clientes apresentam padrões semelhantes de comportamento e criticidade operacional?
 
-Para isso, foram desenvolvidas duas abordagens:
+Para responder a essas perguntas, foram desenvolvidas duas abordagens:
 
-- **modelagem supervisionada**, para estimar o risco de um cliente ser detrator;
-- **clusterização**, para identificar grupos com diferentes níveis de criticidade operacional.
+- **Classificação supervisionada**, para estimar o risco individual de um cliente ser detrator;
+- **Clusterização**, para identificar grupos com diferentes níveis de criticidade operacional.
+
+Os resultados foram integrados a uma interface em Streamlit, permitindo explorar previsões, métricas, gráficos, segmentos e recomendações de negócio.
 
 ---
 
-## Objetivos
+## Objetivos do projeto
 
-Os principais objetivos do projeto são:
+Os principais objetivos são:
 
 - compreender os fatores associados à insatisfação dos clientes;
 - analisar o comportamento do NPS;
-- identificar clientes com maior probabilidade de se tornarem detratores;
-- comparar diferentes algoritmos de Machine Learning;
-- criar níveis de risco para apoiar a priorização de atendimentos;
-- segmentar clientes de acordo com padrões operacionais;
-- gerar recomendações de negócio orientadas pelos resultados;
-- estruturar uma solução reproduzível e organizada para portfólio.
+- identificar padrões relacionados a entrega, atendimento e reclamações;
+- criar atributos relevantes para a modelagem;
+- comparar diferentes algoritmos de classificação;
+- estimar a probabilidade de um cliente se tornar detrator;
+- classificar clientes por nível de risco;
+- estimar o valor financeiro em risco;
+- gerar recomendações de retenção;
+- segmentar clientes por nível de criticidade;
+- disponibilizar os resultados em uma aplicação interativa.
+
+---
+
+## Arquitetura da solução
+
+```text
+Dados brutos
+    ↓
+Limpeza e validação
+    ↓
+Análise exploratória
+    ↓
+Engenharia de atributos
+    ↓
+Pré-processamento
+    ↓
+┌─────────────────────────────┬─────────────────────────────┐
+│ Modelo supervisionado       │ Modelo não supervisionado   │
+│ Gradient Boosting           │ Kernel PCA + Ward           │
+│                             │                             │
+│ Probabilidade de detrator   │ Segmentos de criticidade    │
+│ Nível de risco              │ Perfil médio dos grupos     │
+│ Valor em risco              │ Relação com o NPS           │
+│ Ação recomendada            │ Interpretação operacional   │
+└─────────────────────────────┴─────────────────────────────┘
+    ↓
+Aplicação Streamlit
+```
 
 ---
 
 ## Estrutura do projeto
 
 ```text
-customer-satisfaction-analytics/
+customer-intelligence/
 │
 ├── data/
 │   ├── raw/
@@ -77,7 +107,9 @@ customer-satisfaction-analytics/
 │   └── README.md
 │
 ├── src/
-│   └── em desenvolvimento
+│   ├── app.py
+│   ├── predict.py
+│   └── README.md
 │
 ├── .gitignore
 ├── README.md
@@ -92,29 +124,25 @@ A pasta `data/` está organizada em duas camadas.
 
 ### `raw/`
 
-Contém os dados originais, preservados sem alterações.
-
-Arquivo principal:
+Contém a base original, preservada sem alterações.
 
 ```text
 nps_clientes.csv
 ```
 
-Essa base é utilizada para entendimento, validação, tratamento e análise exploratória.
+Essa base é utilizada nas etapas de entendimento, validação, tratamento e análise exploratória.
 
 ### `processed/`
 
-Contém os dados após as etapas de limpeza, validação e preparação.
-
-Arquivo principal:
+Contém a base após as etapas de limpeza e preparação.
 
 ```text
 clientes_tratados.csv
 ```
 
-Essa base é utilizada nos notebooks de análise exploratória, modelos supervisionados e clusterização.
+Essa versão é utilizada nos notebooks de modelagem supervisionada, clusterização e na aplicação Streamlit.
 
-> Os dados originais permanecem inalterados para garantir rastreabilidade e reprodutibilidade.
+> A separação entre dados brutos e processados garante rastreabilidade e reprodutibilidade.
 
 ---
 
@@ -122,15 +150,16 @@ Essa base é utilizada nos notebooks de análise exploratória, modelos supervis
 
 ### 01. Entendimento e preparação dos dados
 
-Responsável pela leitura, validação e preparação inicial da base.
+Responsável pela leitura, validação e tratamento inicial da base.
 
 Principais etapas:
 
 - análise da estrutura dos dados;
 - verificação dos tipos das variáveis;
-- identificação de valores ausentes e duplicados;
-- tratamento e padronização das informações;
-- preparação da base para as etapas seguintes.
+- identificação de valores ausentes;
+- verificação de registros duplicados;
+- validação da consistência da base;
+- preparação dos dados para as etapas seguintes.
 
 Arquivo:
 
@@ -165,27 +194,28 @@ Arquivo:
 
 Responsável pela construção de modelos de classificação voltados à identificação de clientes detratores.
 
-Foram comparados diferentes algoritmos de Machine Learning, considerando métricas adequadas ao desbalanceamento das classes.
-
 Principais etapas:
 
 - definição da variável-alvo;
 - engenharia de atributos;
 - divisão entre treino e teste;
-- pré-processamento dos dados;
+- pré-processamento;
 - treinamento de diferentes classificadores;
+- comparação de métricas;
 - otimização de hiperparâmetros;
 - validação cruzada;
 - seleção do modelo final;
-- aplicação das probabilidades previstas ao contexto de negócio.
+- aplicação das probabilidades ao contexto de negócio.
 
-O modelo final foi utilizado para:
+Algoritmos avaliados:
 
-- estimar a probabilidade de um cliente ser detrator;
-- classificar clientes por nível de risco;
-- calcular um indicador de valor em risco;
-- recomendar ações de retenção;
-- priorizar clientes para acompanhamento.
+- Regressão Logística;
+- Árvore de Decisão;
+- Random Forest;
+- K-Nearest Neighbors;
+- Support Vector Machine;
+- Gaussian Naive Bayes;
+- Gradient Boosting.
 
 Arquivo:
 
@@ -218,10 +248,7 @@ Critérios de avaliação:
 - interpretação dos perfis;
 - utilidade para o negócio.
 
-A combinação entre **Kernel PCA** e **Clusterização Hierárquica com método Ward** foi selecionada como solução final por produzir dois grupos mais coerentes e interpretáveis:
-
-- clientes de menor criticidade;
-- clientes de alta criticidade.
+A combinação entre **Kernel PCA** e **Clusterização Hierárquica com método Ward** foi selecionada como solução final.
 
 Arquivo:
 
@@ -233,22 +260,21 @@ Arquivo:
 
 ## Engenharia de atributos
 
-Durante o desenvolvimento foram criadas variáveis derivadas para resumir situações operacionais relevantes:
+Durante a modelagem, foram criadas três variáveis derivadas para representar situações operacionais relevantes.
 
-```text
-atraso_critico
-problema_complexo
-reclamacao_recorrente
-```
+### `atraso_critico`
 
-Esses atributos foram construídos a partir de informações relacionadas a:
+Identifica entregas com atraso igual ou superior a dois dias.
 
-- atraso na entrega;
-- quantidade de contatos com o atendimento;
-- tempo de resolução;
-- recorrência de reclamações.
+### `problema_complexo`
 
-O objetivo foi facilitar a identificação de padrões associados à insatisfação e à criticidade operacional.
+Identifica clientes que realizaram múltiplos contatos e tiveram maior tempo de resolução.
+
+### `reclamacao_recorrente`
+
+Identifica clientes com três ou mais reclamações registradas.
+
+Esses atributos ajudam os modelos a representar padrões de insatisfação de maneira mais direta e interpretável.
 
 ---
 
@@ -256,59 +282,55 @@ O objetivo foi facilitar a identificação de padrões associados à insatisfaç
 
 O fluxo de preparação dos dados inclui:
 
-- separação entre variáveis numéricas e categóricas;
-- padronização com `StandardScaler`;
-- codificação da região com `OneHotEncoder`;
-- aplicação das transformações por meio de `ColumnTransformer`;
-- salvamento dos artefatos de pré-processamento com `Joblib`.
+- padronização das variáveis numéricas com `StandardScaler`;
+- codificação da variável `regiao_cliente` com `OneHotEncoder`;
+- aplicação das transformações com `ColumnTransformer`;
+- preservação do mesmo pré-processamento entre treino, teste e aplicação;
+- exportação dos objetos com `Joblib`.
 
-Nos modelos de clusterização, também foram comparadas duas representações dos dados:
-
-- PCA tradicional;
-- Kernel PCA com kernel RBF.
+Na clusterização, também foram utilizadas técnicas de redução de dimensionalidade para diminuir a quantidade de variáveis e facilitar a identificação dos grupos.
 
 ---
 
 ## Modelagem supervisionada
 
-A variável-alvo foi definida para identificar clientes detratores a partir do NPS.
+A variável-alvo foi definida para identificar clientes detratores com base no NPS.
 
-Foram avaliados diferentes algoritmos de classificação, incluindo:
-
-- Regressão Logística;
-- Árvore de Decisão;
-- Random Forest;
-- K-Nearest Neighbors;
-- Support Vector Machine;
-- Naive Bayes;
-- Gradient Boosting.
-
-Os modelos com melhor desempenho passaram por otimização de hiperparâmetros e validação cruzada.
+O projeto considerou como detratores os clientes com nota igual ou inferior a 6.
 
 ### Modelo selecionado
 
-O **Gradient Boosting** foi escolhido como modelo final por apresentar bom equilíbrio entre as métricas e maior capacidade de identificar clientes detratores.
+O **Gradient Boosting** foi selecionado como modelo final por apresentar bom equilíbrio entre as métricas e maior capacidade de identificar clientes detratores.
 
-A seleção considerou especialmente:
+Resultados obtidos na validação cruzada:
 
-- recall da classe detratora;
-- F1-score;
-- F1 Macro;
-- ROC-AUC;
-- estabilidade na validação cruzada;
-- impacto dos erros no contexto de negócio.
+| Métrica | Resultado aproximado |
+|---|---:|
+| Accuracy | 0,8315 |
+| Precision | 0,8591 |
+| Recall | 0,9244 |
+| F1-score | 0,8905 |
+| ROC-AUC | 0,8726 |
 
-### Aplicação ao negócio
+A seleção priorizou especialmente o **recall**, pois deixar de identificar um cliente detrator pode representar perda de receita, recorrência de reclamações e piora na experiência.
 
-As probabilidades previstas pelo modelo foram utilizadas para:
+---
 
-- classificar clientes em níveis de risco;
-- criar uma fila de priorização;
-- estimar valor financeiro em risco;
-- sugerir ações de recuperação;
-- apoiar estratégias de retenção.
+## Aplicação do modelo supervisionado
 
-Os níveis considerados foram:
+As probabilidades geradas pelo modelo foram transformadas em uma camada de apoio à decisão.
+
+A solução permite:
+
+- estimar a probabilidade de detrator;
+- classificar clientes por nível de risco;
+- calcular a quantidade de problemas operacionais;
+- estimar o valor financeiro em risco;
+- recomendar ações de recuperação;
+- sugerir descontos;
+- criar uma fila de priorização.
+
+### Níveis de risco
 
 ```text
 Baixo
@@ -317,32 +339,58 @@ Alto
 Crítico
 ```
 
+### Valor em risco
+
+O indicador é calculado por:
+
+```text
+probabilidade de detrator × valor do pedido
+```
+
+Esse valor não representa uma perda financeira garantida, mas funciona como uma medida de prioridade.
+
+### Recomendações
+
+As ações sugeridas consideram:
+
+- nível de risco;
+- atraso crítico;
+- problema complexo;
+- reclamação recorrente;
+- combinação entre diferentes problemas.
+
 ---
 
 ## Clusterização
 
 A análise não supervisionada foi desenvolvida para complementar o modelo de classificação.
 
-O objetivo não foi reproduzir diretamente as categorias de NPS, mas identificar grupos com diferentes padrões de criticidade operacional.
+O objetivo não foi reproduzir diretamente as classes tradicionais do NPS, mas identificar perfis de clientes com diferentes níveis de criticidade operacional.
+
+---
 
 ### K-Means
 
-O K-Means apresentou os maiores valores de Silhouette Score entre os modelos avaliados, especialmente quando combinado com Kernel PCA.
+O K-Means apresentou os maiores valores de Silhouette Score entre os modelos avaliados, principalmente quando combinado com Kernel PCA.
 
-Entretanto, alguns clusters apresentaram perfis parcialmente semelhantes, reduzindo a utilidade prática da segmentação.
+Entretanto, parte dos grupos apresentou perfis médios semelhantes, reduzindo a clareza da segmentação para o negócio.
+
+---
 
 ### DBSCAN
 
 O DBSCAN não encontrou uma estrutura de densidade consistente.
 
-Dependendo da configuração, o modelo:
+Dependendo dos parâmetros utilizados, o algoritmo:
 
 - classificou grande parte dos registros como ruído;
 - criou muitos clusters pequenos;
-- agrupou quase todos os registros em um único grupo;
+- concentrou praticamente todos os clientes em um único grupo;
 - apresentou Silhouette Score próximo de zero ou negativo.
 
-Por esse motivo, não foi selecionado.
+Por esse motivo, o modelo foi descartado.
+
+---
 
 ### Clusterização Hierárquica
 
@@ -355,127 +403,175 @@ average
 ward
 ```
 
-Algumas configurações apresentaram Silhouette Score elevado, mas formaram grupos extremamente desbalanceados.
+Algumas configurações apresentaram Silhouette Score superior, mas geraram grupos extremamente desbalanceados, chegando a isolar apenas uma observação.
 
-A combinação entre **Kernel PCA** e **Ward** apresentou a divisão mais coerente para o objetivo do projeto.
-
-### Segmentos finais
-
-Os dois grupos foram interpretados como:
-
-- **Clientes de menor criticidade**
-- **Clientes de alta criticidade**
-
-O segmento de alta criticidade apresentou, em média:
-
-- maior atraso;
-- maior número de contatos;
-- maior tempo de resolução;
-- maior recorrência de reclamações;
-- menor NPS;
-- maior concentração de detratores.
+O método **Ward**, combinado com Kernel PCA, produziu uma divisão mais equilibrada e coerente com o objetivo do projeto.
 
 ---
 
-## Principais resultados
+## Segmentos finais
 
-### Modelagem supervisionada
+Os clientes foram divididos em dois grupos:
 
-A análise supervisionada permitiu construir um modelo capaz de estimar o risco de um cliente se tornar detrator.
+### Clientes de menor criticidade
 
-Além da previsão, os resultados foram convertidos em uma camada de aplicação ao negócio, permitindo:
+Apresentaram, em média:
 
-- classificar clientes por nível de risco;
-- priorizar atendimentos;
-- recomendar ações de recuperação;
-- estimar o valor financeiro em risco;
-- apoiar estratégias de retenção.
+- menor atraso;
+- menos contatos com o atendimento;
+- menor número de reclamações;
+- NPS médio mais elevado.
 
-### Clusterização
+Esse grupo ainda possui clientes detratores, portanto a interpretação é relativa e não representa ausência de problemas.
 
-A análise não supervisionada permitiu identificar dois segmentos com diferentes níveis de criticidade operacional.
+### Clientes de alta criticidade
 
-O grupo de alta criticidade concentrou:
+Apresentaram, em média:
 
-- maior atraso médio;
-- maior número de contatos com o atendimento;
-- maior tempo de resolução;
+- maior atraso;
+- mais contatos com o atendimento;
 - maior recorrência de reclamações;
 - menor NPS médio;
-- maior proporção de detratores.
+- maior concentração de detratores.
 
-O grupo de menor criticidade apresentou indicadores relativamente mais favoráveis, embora ainda concentrasse clientes insatisfeitos.
+Esse grupo deve receber prioridade nas ações de recuperação e acompanhamento.
 
-A segmentação não produziu uma separação perfeita entre clientes satisfeitos e insatisfeitos. Ainda assim, conseguiu identificar um grupo significativamente mais vulnerável e prioritário para acompanhamento.
+---
+
+## Relação dos segmentos com o NPS
+
+O NPS não foi utilizado na formação dos clusters.
+
+Ele foi incluído posteriormente apenas para validar a interpretação dos grupos.
+
+| Segmento | NPS médio | Detratores |
+|---|---:|---:|
+| Menor criticidade | 5,86 | 52,46% |
+| Alta criticidade | 3,29 | 90,68% |
+
+Os resultados mostram que a clusterização não separa perfeitamente clientes satisfeitos e insatisfeitos.
+
+Ainda assim, o modelo conseguiu identificar um grupo significativamente mais vulnerável, com menor satisfação e maior concentração de problemas operacionais.
 
 ---
 
 ## Relação entre os modelos
 
-As duas abordagens desenvolvidas são complementares.
+As duas abordagens são complementares.
 
 O modelo supervisionado responde:
 
-> Qual é a probabilidade de um cliente se tornar detrator?
+> Qual é a probabilidade de este cliente se tornar detrator?
 
 A clusterização responde:
 
-> Quais perfis de clientes apresentam padrões semelhantes de comportamento e criticidade?
+> Quais clientes apresentam padrões semelhantes de comportamento e criticidade?
 
-A combinação das duas abordagens oferece uma visão mais completa da experiência do cliente, unindo previsão individual e segmentação comportamental.
+A combinação permite analisar o problema em dois níveis:
 
----
-
-## Aplicação ao negócio
-
-Os resultados podem apoiar áreas como:
-
-- atendimento ao cliente;
-- experiência do consumidor;
-- logística;
-- relacionamento;
-- retenção;
-- marketing;
-- gestão de reclamações.
-
-Possíveis aplicações:
-
-- priorização de clientes críticos;
-- monitoramento preventivo;
-- personalização de ações de recuperação;
-- redução da recorrência de problemas;
-- direcionamento de campanhas de relacionamento;
-- construção de dashboards operacionais;
-- acompanhamento de clientes com maior risco;
-- apoio à tomada de decisão comercial.
+- **individual**, por meio da probabilidade prevista;
+- **comportamental**, por meio dos segmentos encontrados.
 
 ---
 
-## Artefatos gerados
+## Aplicação Streamlit
 
-Os modelos e objetos de transformação foram exportados para a pasta `models/`.
+A pasta `src/` contém uma aplicação interativa para apresentação dos resultados.
 
-### Modelos supervisionados
+A interface possui quatro páginas.
+
+### Visão geral
+
+Apresenta:
+
+- objetivo da solução;
+- principais entregas;
+- fluxo do modelo supervisionado;
+- fluxo do modelo não supervisionado.
+
+### Predição de detratores
+
+Permite enviar um arquivo CSV e gerar:
+
+- probabilidade de detrator;
+- nível de risco;
+- valor em risco;
+- quantidade de problemas;
+- desconto sugerido;
+- ação recomendada;
+- fila de priorização;
+- download do resultado completo.
+
+### Segmentação de clientes
+
+Apresenta:
+
+- quantidade de clientes em cada segmento;
+- NPS médio por grupo;
+- composição das classes de NPS;
+- perfil médio dos segmentos;
+- interpretação dos grupos;
+- principais diferenças operacionais.
+
+### Sobre o projeto
+
+Resume:
+
+- modelos utilizados;
+- resultados gerados;
+- tecnologias aplicadas;
+- limitações da solução.
+
+---
+
+## Arquivo de entrada da aplicação
+
+O arquivo CSV enviado para a área de predição deve conter:
 
 ```text
-modelo_final.pkl
+idade_cliente
+regiao_cliente
+tempo_cliente_meses
+valor_pedido
+quantidade_itens
+valor_desconto
+parcelas_pagamento
+tempo_entrega_dias
+atraso_entrega_dias
+valor_frete
+tentativas_entrega
+contatos_atendimento
+tempo_resolucao_dias
+numero_reclamacoes
+```
+
+A coluna `nps` não é necessária para novas previsões.
+
+---
+
+## Artefatos exportados
+
+### Modelo supervisionado
+
+```text
+models/supervised/modelo_final.pkl
 ```
 
 ### Clusterização
 
 ```text
-kernel_pca_clusterizacao.pkl
-modelo_hierarquico_ward.pkl
+models/clustering/kernel_pca_clusterizacao.pkl
+models/clustering/modelo_hierarquico_ward.pkl
 ```
 
 ### Pré-processamento
 
 ```text
-pre_processamento.pkl
-pre_processamento_clusterizacao.pkl
+models/preprocessing/pre_processamento.pkl
+models/preprocessing/pre_processamento_clusterizacao.pkl
 ```
 
-> O `AgglomerativeClustering` não possui método `predict`. Por isso, o modelo hierárquico salvo funciona como artefato analítico da segmentação atual. A atribuição de novos clientes exigirá uma estratégia adicional.
+> O `AgglomerativeClustering` não possui método `predict`. Por isso, o modelo Ward é utilizado na aplicação como artefato analítico dos grupos formados durante o treinamento.
 
 ---
 
@@ -489,6 +585,7 @@ pre_processamento_clusterizacao.pkl
 - Scikit-learn;
 - SciPy;
 - Joblib;
+- Streamlit;
 - Jupyter Notebook;
 - Git;
 - GitHub.
@@ -503,28 +600,32 @@ Clone o repositório:
 git clone <URL_DO_REPOSITORIO>
 ```
 
-Acesse a pasta do projeto:
+Acesse a pasta:
 
 ```bash
-cd customer-satisfaction-analytics
+cd customer-intelligence
 ```
 
-Crie um ambiente virtual:
+Crie o ambiente virtual com Python 3.12:
 
-```bash
-python -m venv .venv
+### Windows
+
+```powershell
+py -3.12 -m venv .venv
+.venv\Scripts\Activate.ps1
 ```
 
-Ative o ambiente no Linux ou macOS:
+### Linux ou macOS
 
 ```bash
+python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-No Windows:
+Atualize o `pip`:
 
 ```bash
-.venv\Scripts\activate
+python -m pip install --upgrade pip
 ```
 
 Instale as dependências:
@@ -533,17 +634,11 @@ Instale as dependências:
 pip install -r requirements.txt
 ```
 
-Inicie o Jupyter Notebook:
-
-```bash
-jupyter notebook
-```
-
 ---
 
-## Ordem de execução
+## Execução dos notebooks
 
-A execução recomendada segue a ordem numérica dos notebooks:
+A ordem recomendada é:
 
 ```text
 01 → Entendimento e preparação dos dados
@@ -552,7 +647,21 @@ A execução recomendada segue a ordem numérica dos notebooks:
 04 → Modelos de clusterização
 ```
 
-As etapas posteriores utilizam dados, transformações e decisões construídas nos notebooks anteriores.
+---
+
+## Execução da aplicação
+
+Na raiz do projeto, execute:
+
+```bash
+python -m streamlit run src/app.py
+```
+
+A aplicação será aberta no endereço:
+
+```text
+http://localhost:8501
+```
 
 ---
 
@@ -560,42 +669,81 @@ As etapas posteriores utilizam dados, transformações e decisões construídas 
 
 Algumas limitações devem ser consideradas:
 
-- os clusters apresentaram sobreposição, refletida pelos valores de Silhouette Score;
-- o grupo de menor criticidade ainda possui clientes detratores;
-- a segmentação representa diferenças relativas entre os perfis;
-- as regras de ação e desconto possuem caráter analítico e precisam de validação comercial;
-- o modelo hierárquico não permite atribuição direta de novos registros;
-- a solução ainda não foi transformada em uma aplicação ou API;
-- a pasta `src/` ainda está em desenvolvimento.
+- os dados não apresentam separação natural perfeita entre os grupos;
+- os valores de Silhouette Score permaneceram baixos;
+- o segmento de menor criticidade ainda possui clientes detratores;
+- as regras de desconto e ação são simulações analíticas;
+- o valor em risco não representa perda financeira garantida;
+- o modelo hierárquico não possui inferência direta para novos clientes;
+- as recomendações precisam ser validadas de acordo com as regras reais da empresa;
+- o desempenho deve ser monitorado caso o perfil dos dados mude.
 
 ---
 
-## Próximas etapas
+## Possíveis melhorias
 
-As próximas evoluções previstas incluem:
+Evoluções futuras do projeto:
 
-- estruturar os scripts reutilizáveis na pasta `src/`;
-- criar funções para pré-processamento e inferência;
+- criar testes automatizados;
+- adicionar validação mais completa dos arquivos enviados;
+- incluir análise individual de clientes na aplicação;
+- criar um classificador indutivo para novos segmentos;
+- implementar monitoramento de drift;
+- adicionar rastreamento de experimentos com MLflow;
+- criar pipelines automatizados;
+- containerizar a aplicação com Docker;
 - desenvolver uma API com FastAPI;
-- criar um dashboard com Streamlit ou Power BI;
-- implementar testes automatizados;
-- adicionar monitoramento das métricas;
-- criar um modelo auxiliar para atribuir novos clientes aos segmentos;
-- containerizar a solução com Docker;
-- melhorar a documentação técnica;
-- preparar uma estratégia de deploy.
+- integrar a solução a um banco de dados;
+- publicar a aplicação em ambiente cloud;
+- desenvolver um dashboard gerencial em Power BI;
+- validar financeiramente as estratégias de retenção.
 
 ---
 
-## Considerações finais
+## Aplicações de negócio
+
+A solução pode apoiar áreas como:
+
+- atendimento ao cliente;
+- experiência do consumidor;
+- logística;
+- retenção;
+- relacionamento;
+- marketing;
+- gestão de reclamações;
+- operações;
+- planejamento comercial.
+
+Possíveis usos:
+
+- priorização de clientes críticos;
+- monitoramento preventivo;
+- personalização de ações de recuperação;
+- redução da recorrência de problemas;
+- análise do impacto operacional sobre o NPS;
+- construção de campanhas de retenção;
+- acompanhamento do valor financeiro em risco;
+- apoio à tomada de decisão.
+
+---
+
+## Conclusão
 
 Este projeto demonstra uma abordagem completa de Ciência de Dados aplicada à satisfação de clientes.
 
-Mais do que treinar modelos, o trabalho conecta preparação de dados, análise exploratória, engenharia de atributos, Machine Learning, clusterização e interpretação de negócio.
+Mais do que treinar modelos, a solução conecta:
 
-A modelagem supervisionada permite estimar o risco individual de insatisfação. A clusterização complementa essa visão ao identificar perfis com diferentes níveis de criticidade operacional.
+- preparação de dados;
+- análise exploratória;
+- engenharia de atributos;
+- Machine Learning;
+- clusterização;
+- interpretação de negócio;
+- aplicação interativa.
 
-O resultado é uma solução analítica capaz de apoiar estratégias de retenção, priorização de atendimento, monitoramento preventivo e melhoria da experiência do cliente.
+O modelo supervisionado permite estimar o risco individual de insatisfação, enquanto a clusterização identifica grupos com diferentes níveis de criticidade operacional.
+
+A integração das duas abordagens oferece uma visão mais ampla da experiência do cliente e cria uma base analítica para estratégias de retenção, priorização de atendimento e melhoria contínua.
 
 ---
 
@@ -603,4 +751,4 @@ O resultado é uma solução analítica capaz de apoiar estratégias de retenç�
 
 Desenvolvido por **Renan Trevelim**.
 
-Projeto criado para estudo, portfólio e aplicação prática de técnicas de Ciência de Dados e Machine Learning.
+Projeto criado para estudo, portfólio e aplicação prática de técnicas de Ciência de Dados, Machine Learning e análise de negócio.
