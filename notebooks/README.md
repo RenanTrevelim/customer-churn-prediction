@@ -4,7 +4,7 @@ Este projeto apresenta uma solução completa de Ciência de Dados aplicada à a
 
 O trabalho foi estruturado em quatro notebooks, cobrindo desde o entendimento e a preparação dos dados até a construção de modelos supervisionados e não supervisionados.
 
-A proposta combina análise exploratória, engenharia de atributos, Machine Learning e clusterização para transformar dados de perfil, pedido, entrega e atendimento em informações úteis para retenção, priorização de clientes e melhoria da experiência.
+A proposta combina análise exploratória, engenharia de atributos, seleção de features, Machine Learning e clusterização para transformar dados de perfil, pedido, entrega e atendimento em informações úteis para retenção, priorização de clientes e melhoria da experiência.
 
 ---
 
@@ -12,8 +12,8 @@ A proposta combina análise exploratória, engenharia de atributos, Machine Lear
 
 O principal objetivo é compreender os fatores associados à insatisfação dos clientes e desenvolver soluções capazes de apoiar duas frentes complementares:
 
-- identificar clientes com maior probabilidade de se tornarem detratores;
-- segmentar clientes de acordo com padrões de comportamento e criticidade operacional.
+* identificar clientes com maior probabilidade de se tornarem detratores;
+* segmentar clientes de acordo com padrões de comportamento e criticidade operacional.
 
 Com isso, o projeto busca transformar dados históricos em informações acionáveis para as áreas de atendimento, relacionamento, logística e experiência do cliente.
 
@@ -27,11 +27,11 @@ Responsável pela leitura, validação e tratamento inicial da base.
 
 Principais etapas:
 
-- análise da estrutura dos dados;
-- verificação dos tipos das variáveis;
-- identificação de valores ausentes e duplicados;
-- tratamento e padronização das informações;
-- preparação da base para as etapas seguintes.
+* análise da estrutura dos dados;
+* verificação dos tipos das variáveis;
+* identificação de valores ausentes e duplicados;
+* tratamento e padronização das informações;
+* preparação da base para as etapas seguintes.
 
 Arquivo:
 
@@ -39,24 +39,29 @@ Arquivo:
 01_entendimento_e_preparacao_dos_dados.ipynb
 ```
 
+---
+
 ## 02. Análise exploratória dos dados
 
 Responsável pela investigação dos principais padrões presentes na base.
 
 ### Principais análises
 
-- distribuição das variáveis;
-- comportamento do NPS;
-- relação entre satisfação, entrega e atendimento;
-- impacto de atrasos e reclamações;
-- identificação de padrões relevantes para a modelagem;
-- apoio à criação de novas variáveis.
+* distribuição das variáveis;
+* comportamento do NPS;
+* relação entre satisfação, entrega e atendimento;
+* impacto de atrasos e reclamações;
+* análise de correlação com o NPS;
+* identificação de padrões relevantes para a modelagem;
+* apoio à criação de novas variáveis.
 
 ### Arquivo
 
 ```text
 02_analise_exploratoria_dos_dados.ipynb
 ```
+
+---
 
 ## 03. Modelos supervisionados
 
@@ -66,25 +71,65 @@ Foram comparados diferentes algoritmos de Machine Learning, considerando métric
 
 ### Principais etapas
 
-- definição da variável-alvo;
-- engenharia de atributos;
-- divisão entre treino e teste;
-- pré-processamento dos dados;
-- treinamento de diferentes classificadores;
-- otimização de hiperparâmetros;
-- validação cruzada;
-- seleção do modelo final;
-- aplicação das probabilidades previstas ao contexto de negócio.
+* definição da variável-alvo;
+* engenharia de atributos;
+* divisão entre treino e teste;
+* pré-processamento dos dados;
+* aplicação de seleção de features com método Filter;
+* treinamento de diferentes classificadores;
+* otimização de hiperparâmetros;
+* validação cruzada;
+* comparação dos modelos;
+* análise de importância das features;
+* seleção do modelo final;
+* aplicação das probabilidades previstas ao contexto de negócio.
+
+### Feature Selection
+
+Após o pré-processamento, foi aplicado o método `VarianceThreshold` como etapa inicial de seleção de features.
+
+O objetivo foi identificar variáveis com baixa variabilidade e verificar se alguma feature poderia ser removida antes da modelagem.
+
+Como nenhuma das 20 features apresentou variância inferior ao limite definido, todas foram mantidas para as etapas seguintes.
+
+A seleção foi utilizada como uma etapa de verificação e limpeza, evitando a remoção prematura de variáveis potencialmente relevantes.
+
+### Modelo final
+
+Após a comparação entre os modelos, otimização de hiperparâmetros, análise das matrizes de confusão, curvas ROC e validação cruzada, o **XGBoost** foi selecionado como modelo final.
+
+O modelo apresentou:
+
+* bom equilíbrio entre desempenho e capacidade de generalização;
+* alta capacidade de identificação da classe positiva;
+* ROC-AUC próxima de 0,87;
+* recall médio superior a 92% na validação cruzada;
+* estabilidade entre diferentes divisões dos dados.
+
+### Feature Importance
+
+Após a seleção do modelo final, foi analisada a importância das variáveis utilizando o atributo `feature_importances_` do XGBoost.
+
+Entre as features com maior contribuição para as previsões, destacaram-se:
+
+* `reclamacao_recorrente`;
+* `numero_reclamacoes`;
+* `atraso_entrega_dias`;
+* `atraso_critico`;
+* `contatos_atendimento`;
+* `tempo_resolucao_dias`.
+
+Esses resultados reforçaram os padrões identificados durante a análise exploratória, principalmente em relação ao impacto de atrasos, reclamações e dificuldades de atendimento na satisfação dos clientes.
 
 ### Aplicação do modelo final
 
 O modelo final foi utilizado para:
 
-- estimar a probabilidade de um cliente ser detrator;
-- classificar clientes por nível de risco;
-- calcular um indicador de valor em risco;
-- recomendar ações de retenção;
-- priorizar clientes para acompanhamento.
+* estimar a probabilidade de um cliente ser detrator;
+* classificar clientes por nível de risco;
+* calcular um indicador de valor em risco;
+* recomendar ações de retenção;
+* priorizar clientes para acompanhamento.
 
 ### Arquivo
 
@@ -92,37 +137,39 @@ O modelo final foi utilizado para:
 03_modelos_supervisionados.ipynb
 ```
 
+---
+
 ## 04. Modelos de clusterização
 
 Responsável pela segmentação de clientes por meio de técnicas de aprendizado não supervisionado.
 
 ### Algoritmos avaliados
 
-- K-Means;
-- DBSCAN;
-- Clusterização Hierárquica.
+* K-Means;
+* DBSCAN;
+* Clusterização Hierárquica.
 
 ### Técnicas de redução de dimensionalidade
 
-- PCA;
-- Kernel PCA.
+* PCA;
+* Kernel PCA.
 
 ### Critérios de avaliação
 
 Os modelos foram analisados considerando:
 
-- Silhouette Score;
-- distribuição dos clientes entre os clusters;
-- equilíbrio dos grupos;
-- interpretação dos perfis;
-- utilidade para o negócio.
+* Silhouette Score;
+* distribuição dos clientes entre os clusters;
+* equilíbrio dos grupos;
+* interpretação dos perfis;
+* utilidade para o negócio.
 
 ### Modelo selecionado
 
 A combinação entre Kernel PCA e Clusterização Hierárquica com método Ward foi selecionada como solução final por produzir dois grupos mais coerentes e interpretáveis:
 
-- clientes de menor criticidade;
-- clientes de alta criticidade.
+* clientes de menor criticidade;
+* clientes de alta criticidade.
 
 ### Arquivo
 
@@ -130,19 +177,32 @@ A combinação entre Kernel PCA e Clusterização Hierárquica com método Ward 
 04_modelos_clusterizacao.ipynb
 ```
 
+---
+
 ## Principais resultados
 
 ### Modelagem supervisionada
 
-A análise supervisionada permitiu construir um modelo capaz de estimar o risco de um cliente se tornar detrator.
+A análise supervisionada resultou em um modelo XGBoost capaz de estimar o risco de um cliente se tornar detrator.
 
-Além da previsão, o resultado foi convertido em uma camada de aplicação ao negócio, permitindo:
+Além da previsão, o processo permitiu identificar quais variáveis mais influenciaram o comportamento preditivo do modelo.
 
-- classificar clientes por nível de risco;
-- priorizar atendimentos;
-- recomendar ações de recuperação;
-- estimar o valor financeiro em risco;
-- apoiar estratégias de retenção.
+Os principais fatores estiveram relacionados a:
+
+* recorrência de reclamações;
+* quantidade de reclamações;
+* atrasos na entrega;
+* atrasos críticos;
+* necessidade de múltiplos contatos;
+* tempo de resolução de problemas.
+
+O resultado foi convertido em uma camada de aplicação ao negócio, permitindo:
+
+* classificar clientes por nível de risco;
+* priorizar atendimentos;
+* recomendar ações de recuperação;
+* estimar o valor financeiro em risco;
+* apoiar estratégias de retenção.
 
 ### Clusterização
 
@@ -150,12 +210,12 @@ A análise não supervisionada permitiu identificar dois segmentos com diferente
 
 O grupo de **alta criticidade** concentrou:
 
-- maior atraso médio;
-- maior número de contatos com o atendimento;
-- maior tempo de resolução;
-- maior recorrência de reclamações;
-- menor NPS médio;
-- maior proporção de detratores.
+* maior atraso médio;
+* maior número de contatos com o atendimento;
+* maior tempo de resolução;
+* maior recorrência de reclamações;
+* menor NPS médio;
+* maior proporção de detratores.
 
 Já o grupo de **menor criticidade** apresentou indicadores relativamente mais favoráveis, embora ainda concentrasse clientes insatisfeitos.
 
@@ -183,22 +243,22 @@ Essa combinação oferece uma visão mais completa da experiência do cliente, u
 
 Os resultados podem apoiar diferentes áreas da empresa, como:
 
-- atendimento ao cliente;
-- experiência do consumidor;
-- logística;
-- relacionamento;
-- retenção;
-- marketing;
-- gestão de reclamações.
+* atendimento ao cliente;
+* experiência do consumidor;
+* logística;
+* relacionamento;
+* retenção;
+* marketing;
+* gestão de reclamações.
 
 Entre as possíveis aplicações estão:
 
-- priorização de clientes críticos;
-- monitoramento preventivo;
-- personalização de ações de recuperação;
-- redução da recorrência de problemas;
-- direcionamento de campanhas de relacionamento;
-- construção de dashboards operacionais.
+* priorização de clientes críticos;
+* monitoramento preventivo;
+* personalização de ações de recuperação;
+* redução da recorrência de problemas;
+* direcionamento de campanhas de relacionamento;
+* construção de dashboards operacionais.
 
 ---
 
@@ -212,3 +272,4 @@ notebooks/
 ├── 03_modelos_supervisionados.ipynb
 ├── 04_modelos_clusterizacao.ipynb
 └── README.md
+```

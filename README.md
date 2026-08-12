@@ -1,27 +1,25 @@
 # Customer Intelligence — Predição de Detratores e Segmentação de Clientes
 
-Projeto completo de Ciência de Dados aplicado à satisfação de clientes, combinando análise exploratória, engenharia de atributos, Machine Learning supervisionado, clusterização e uma aplicação interativa desenvolvida com Streamlit.
+Projeto de Ciência de Dados aplicado à satisfação de clientes em um contexto de e-commerce, combinando análise exploratória, engenharia de atributos, seleção de features, Machine Learning supervisionado, clusterização e aplicação interativa com Streamlit.
 
-A solução foi construída para transformar informações relacionadas ao perfil do cliente, pedidos, entrega, atendimento e reclamações em indicadores úteis para priorização, retenção e melhoria da experiência do consumidor.
+A solução utiliza informações relacionadas ao perfil do cliente, pedidos, entrega, atendimento e reclamações para gerar indicadores úteis à retenção, priorização de clientes e melhoria da experiência do consumidor.
 
 ---
 
 ## Visão geral
 
-A insatisfação de clientes pode estar associada a diferentes fatores operacionais, como atrasos na entrega, recorrência de reclamações, excesso de contatos com o atendimento e tempo elevado de resolução.
-
-Este projeto foi desenvolvido para responder a duas perguntas complementares:
+O projeto foi desenvolvido para responder a duas perguntas principais:
 
 > Qual é a probabilidade de um cliente se tornar detrator?
 
 > Quais perfis de clientes apresentam padrões semelhantes de comportamento e criticidade operacional?
 
-Para responder a essas perguntas, foram desenvolvidas duas abordagens:
+Para isso, foram construídas duas abordagens complementares:
 
-- **Classificação supervisionada**, para estimar o risco individual de um cliente ser detrator;
-- **Clusterização**, para identificar grupos com diferentes níveis de criticidade operacional.
+* **Classificação supervisionada**, para estimar o risco individual de um cliente ser detrator;
+* **Clusterização**, para identificar grupos com diferentes níveis de criticidade operacional.
 
-Os resultados foram integrados a uma interface em Streamlit, permitindo explorar previsões, métricas, gráficos, segmentos e recomendações de negócio.
+Os resultados foram integrados a uma aplicação Streamlit, permitindo explorar previsões, segmentos e recomendações de negócio.
 
 ---
 
@@ -29,17 +27,18 @@ Os resultados foram integrados a uma interface em Streamlit, permitindo explorar
 
 Os principais objetivos são:
 
-- compreender os fatores associados à insatisfação dos clientes;
-- analisar o comportamento do NPS;
-- identificar padrões relacionados a entrega, atendimento e reclamações;
-- criar atributos relevantes para a modelagem;
-- comparar diferentes algoritmos de classificação;
-- estimar a probabilidade de um cliente se tornar detrator;
-- classificar clientes por nível de risco;
-- estimar o valor financeiro em risco;
-- gerar recomendações de retenção;
-- segmentar clientes por nível de criticidade;
-- disponibilizar os resultados em uma aplicação interativa.
+* compreender os fatores associados à insatisfação dos clientes;
+* analisar o comportamento do NPS;
+* identificar padrões relacionados a entrega, atendimento e reclamações;
+* criar atributos relevantes para a modelagem;
+* aplicar técnicas de seleção e análise de features;
+* comparar diferentes algoritmos de Machine Learning;
+* estimar a probabilidade de um cliente se tornar detrator;
+* classificar clientes por nível de risco;
+* estimar o valor financeiro em risco;
+* gerar recomendações de retenção;
+* segmentar clientes por nível de criticidade;
+* disponibilizar os resultados em uma aplicação interativa.
 
 ---
 
@@ -56,9 +55,12 @@ Engenharia de atributos
     ↓
 Pré-processamento
     ↓
+Feature Selection
+VarianceThreshold
+    ↓
 ┌─────────────────────────────┬─────────────────────────────┐
 │ Modelo supervisionado       │ Modelo não supervisionado   │
-│ Gradient Boosting           │ Kernel PCA + Ward           │
+│ XGBoost                     │ Kernel PCA + Ward           │
 │                             │                             │
 │ Probabilidade de detrator   │ Segmentos de criticidade    │
 │ Nível de risco              │ Perfil médio dos grupos     │
@@ -130,8 +132,6 @@ Contém a base original, preservada sem alterações.
 nps_clientes.csv
 ```
 
-Essa base é utilizada nas etapas de entendimento, validação, tratamento e análise exploratória.
-
 ### `processed/`
 
 Contém a base após as etapas de limpeza e preparação.
@@ -140,9 +140,7 @@ Contém a base após as etapas de limpeza e preparação.
 clientes_tratados.csv
 ```
 
-Essa versão é utilizada nos notebooks de modelagem supervisionada, clusterização e na aplicação Streamlit.
-
-> A separação entre dados brutos e processados garante rastreabilidade e reprodutibilidade.
+A separação entre dados brutos e processados contribui para rastreabilidade e reprodutibilidade do projeto.
 
 ---
 
@@ -154,14 +152,12 @@ Responsável pela leitura, validação e tratamento inicial da base.
 
 Principais etapas:
 
-- análise da estrutura dos dados;
-- verificação dos tipos das variáveis;
-- identificação de valores ausentes;
-- verificação de registros duplicados;
-- validação da consistência da base;
-- preparação dos dados para as etapas seguintes.
-
-Arquivo:
+* análise da estrutura dos dados;
+* verificação dos tipos das variáveis;
+* identificação de valores ausentes;
+* verificação de registros duplicados;
+* validação da consistência da base;
+* preparação dos dados para as etapas seguintes.
 
 ```text
 01_entendimento_e_preparacao_dos_dados.ipynb
@@ -171,18 +167,17 @@ Arquivo:
 
 ### 02. Análise exploratória dos dados
 
-Responsável pela investigação dos principais padrões presentes na base.
+Responsável pela investigação dos padrões relacionados à satisfação dos clientes.
 
 Principais análises:
 
-- distribuição das variáveis;
-- comportamento do NPS;
-- relação entre satisfação, entrega e atendimento;
-- impacto de atrasos e reclamações;
-- identificação de padrões relevantes para a modelagem;
-- apoio à criação de novas variáveis.
-
-Arquivo:
+* distribuição das variáveis;
+* comportamento do NPS;
+* relação entre satisfação, entrega e atendimento;
+* impacto de atrasos e reclamações;
+* análise de correlação entre variáveis numéricas e NPS;
+* identificação de padrões relevantes para a modelagem;
+* apoio à criação de novas variáveis.
 
 ```text
 02_analise_exploratoria_dos_dados.ipynb
@@ -192,32 +187,32 @@ Arquivo:
 
 ### 03. Modelos supervisionados
 
-Responsável pela construção de modelos de classificação voltados à identificação de clientes detratores.
+Responsável pela construção e avaliação dos modelos de classificação voltados à identificação de clientes detratores.
 
 Principais etapas:
 
-- definição da variável-alvo;
-- engenharia de atributos;
-- divisão entre treino e teste;
-- pré-processamento;
-- treinamento de diferentes classificadores;
-- comparação de métricas;
-- otimização de hiperparâmetros;
-- validação cruzada;
-- seleção do modelo final;
-- aplicação das probabilidades ao contexto de negócio.
+* definição da variável-alvo;
+* engenharia de atributos;
+* divisão entre treino e teste;
+* pré-processamento;
+* Feature Selection;
+* treinamento e comparação de classificadores;
+* otimização de hiperparâmetros;
+* validação cruzada;
+* análise da importância das features;
+* seleção do modelo final;
+* aplicação das probabilidades ao contexto de negócio.
 
 Algoritmos avaliados:
 
-- Regressão Logística;
-- Árvore de Decisão;
-- Random Forest;
-- K-Nearest Neighbors;
-- Support Vector Machine;
-- Gaussian Naive Bayes;
-- Gradient Boosting.
-
-Arquivo:
+* Regressão Logística;
+* Árvore de Decisão;
+* Random Forest;
+* K-Nearest Neighbors;
+* Support Vector Machine;
+* Gaussian Naive Bayes;
+* Gradient Boosting;
+* XGBoost.
 
 ```text
 03_modelos_supervisionados.ipynb
@@ -227,30 +222,20 @@ Arquivo:
 
 ### 04. Modelos de clusterização
 
-Responsável pela segmentação de clientes por meio de técnicas de aprendizado não supervisionado.
+Responsável pela segmentação dos clientes utilizando aprendizado não supervisionado.
 
 Algoritmos avaliados:
 
-- K-Means;
-- DBSCAN;
-- Clusterização Hierárquica.
+* K-Means;
+* DBSCAN;
+* Clusterização Hierárquica.
 
 Técnicas de redução de dimensionalidade:
 
-- PCA;
-- Kernel PCA.
+* PCA;
+* Kernel PCA.
 
-Critérios de avaliação:
-
-- Silhouette Score;
-- distribuição dos clientes entre os clusters;
-- equilíbrio dos grupos;
-- interpretação dos perfis;
-- utilidade para o negócio.
-
-A combinação entre **Kernel PCA** e **Clusterização Hierárquica com método Ward** foi selecionada como solução final.
-
-Arquivo:
+A combinação entre **Kernel PCA** e **Clusterização Hierárquica com método Ward** foi selecionada como solução final por produzir grupos mais coerentes e interpretáveis para o contexto de negócio.
 
 ```text
 04_modelos_clusterizacao.ipynb
@@ -260,7 +245,7 @@ Arquivo:
 
 ## Engenharia de atributos
 
-Durante a modelagem, foram criadas três variáveis derivadas para representar situações operacionais relevantes.
+Durante a análise e modelagem, foram criadas três variáveis derivadas para representar situações operacionais relevantes.
 
 ### `atraso_critico`
 
@@ -268,27 +253,31 @@ Identifica entregas com atraso igual ou superior a dois dias.
 
 ### `problema_complexo`
 
-Identifica clientes que realizaram múltiplos contatos e tiveram maior tempo de resolução.
+Identifica clientes com múltiplos contatos com o atendimento e maior tempo de resolução.
 
 ### `reclamacao_recorrente`
 
 Identifica clientes com três ou mais reclamações registradas.
 
-Esses atributos ajudam os modelos a representar padrões de insatisfação de maneira mais direta e interpretável.
+Esses atributos sintetizam padrões identificados durante a análise exploratória e permitem representar situações de insatisfação de forma mais direta.
 
 ---
 
-## Pré-processamento
+## Pré-processamento e Feature Selection
 
-O fluxo de preparação dos dados inclui:
+O fluxo de preparação dos dados supervisionados inclui:
 
-- padronização das variáveis numéricas com `StandardScaler`;
-- codificação da variável `regiao_cliente` com `OneHotEncoder`;
-- aplicação das transformações com `ColumnTransformer`;
-- preservação do mesmo pré-processamento entre treino, teste e aplicação;
-- exportação dos objetos com `Joblib`.
+* padronização das variáveis numéricas com `StandardScaler`;
+* codificação da variável `regiao_cliente` com `OneHotEncoder`;
+* aplicação das transformações com `ColumnTransformer`;
+* aplicação do método `VarianceThreshold`;
+* preservação das mesmas transformações entre treino, teste e inferência.
 
-Na clusterização, também foram utilizadas técnicas de redução de dimensionalidade para diminuir a quantidade de variáveis e facilitar a identificação dos grupos.
+O `VarianceThreshold` foi utilizado após o pré-processamento para verificar a existência de features com baixa variabilidade.
+
+Nenhuma das 20 features apresentou variância inferior ao limite definido, portanto todas foram preservadas para a modelagem.
+
+O pré-processamento final foi exportado com `Joblib` para garantir consistência durante novas previsões.
 
 ---
 
@@ -296,39 +285,56 @@ Na clusterização, também foram utilizadas técnicas de redução de dimension
 
 A variável-alvo foi definida para identificar clientes detratores com base no NPS.
 
-O projeto considerou como detratores os clientes com nota igual ou inferior a 6.
+Foram considerados detratores os clientes com nota igual ou inferior a 6.
 
 ### Modelo selecionado
 
-O **Gradient Boosting** foi selecionado como modelo final por apresentar bom equilíbrio entre as métricas e maior capacidade de identificar clientes detratores.
+O **XGBoost** foi selecionado como modelo final após comparação de métricas, otimização de hiperparâmetros, análise das matrizes de confusão, curvas ROC e validação cruzada.
 
-Resultados obtidos na validação cruzada:
+Resultados médios obtidos na validação cruzada:
 
-| Métrica | Resultado aproximado |
-|---|---:|
-| Accuracy | 0,8315 |
-| Precision | 0,8591 |
-| Recall | 0,9244 |
-| F1-score | 0,8905 |
-| ROC-AUC | 0,8726 |
+| Métrica   | Resultado aproximado |
+| --------- | -------------------: |
+| Accuracy  |               0,8300 |
+| Precision |               0,8560 |
+| Recall    |               0,9264 |
+| F1-score  |               0,8898 |
+| ROC-AUC   |               0,8734 |
 
-A seleção priorizou especialmente o **recall**, pois deixar de identificar um cliente detrator pode representar perda de receita, recorrência de reclamações e piora na experiência.
+O recall superior a **92%** foi especialmente relevante para o objetivo do projeto, pois indica boa capacidade de identificação dos clientes pertencentes à classe positiva.
+
+Os baixos desvios observados durante a validação cruzada também indicaram comportamento consistente entre diferentes divisões dos dados.
+
+### Importância das features
+
+Após a escolha do modelo final, foi analisado o atributo `feature_importances_` do XGBoost.
+
+Entre as variáveis com maior contribuição para as previsões, destacaram-se:
+
+* `reclamacao_recorrente`;
+* `numero_reclamacoes`;
+* `atraso_entrega_dias`;
+* `atraso_critico`;
+* `contatos_atendimento`;
+* `tempo_resolucao_dias`.
+
+Os resultados reforçam os padrões encontrados durante a análise exploratória, principalmente em relação ao impacto de atrasos, reclamações recorrentes e dificuldades de atendimento.
 
 ---
 
 ## Aplicação do modelo supervisionado
 
-As probabilidades geradas pelo modelo foram transformadas em uma camada de apoio à decisão.
+As probabilidades geradas pelo XGBoost foram transformadas em indicadores para apoio à decisão.
 
 A solução permite:
 
-- estimar a probabilidade de detrator;
-- classificar clientes por nível de risco;
-- calcular a quantidade de problemas operacionais;
-- estimar o valor financeiro em risco;
-- recomendar ações de recuperação;
-- sugerir descontos;
-- criar uma fila de priorização.
+* estimar a probabilidade de detrator;
+* classificar clientes por nível de risco;
+* calcular a quantidade de problemas operacionais;
+* estimar o valor financeiro em risco;
+* recomendar ações de recuperação;
+* sugerir descontos;
+* criar uma fila de priorização.
 
 ### Níveis de risco
 
@@ -347,50 +353,36 @@ O indicador é calculado por:
 probabilidade de detrator × valor do pedido
 ```
 
-Esse valor não representa uma perda financeira garantida, mas funciona como uma medida de prioridade.
+Esse valor não representa uma perda financeira garantida, mas funciona como uma medida de priorização.
 
-### Recomendações
-
-As ações sugeridas consideram:
-
-- nível de risco;
-- atraso crítico;
-- problema complexo;
-- reclamação recorrente;
-- combinação entre diferentes problemas.
+As recomendações consideram o nível de risco e a presença de fatores como atraso crítico, problema complexo e reclamação recorrente.
 
 ---
 
 ## Clusterização
 
-A análise não supervisionada foi desenvolvida para complementar o modelo de classificação.
+A análise não supervisionada foi desenvolvida para complementar a classificação individual.
 
-O objetivo não foi reproduzir diretamente as classes tradicionais do NPS, mas identificar perfis de clientes com diferentes níveis de criticidade operacional.
-
----
+O objetivo foi identificar grupos com diferentes níveis de criticidade operacional, sem utilizar diretamente o NPS na formação dos clusters.
 
 ### K-Means
 
-O K-Means apresentou os maiores valores de Silhouette Score entre os modelos avaliados, principalmente quando combinado com Kernel PCA.
+O K-Means apresentou bons valores de Silhouette Score, principalmente quando combinado com Kernel PCA.
 
 Entretanto, parte dos grupos apresentou perfis médios semelhantes, reduzindo a clareza da segmentação para o negócio.
-
----
 
 ### DBSCAN
 
 O DBSCAN não encontrou uma estrutura de densidade consistente.
 
-Dependendo dos parâmetros utilizados, o algoritmo:
+Dependendo dos parâmetros, o algoritmo apresentou situações como:
 
-- classificou grande parte dos registros como ruído;
-- criou muitos clusters pequenos;
-- concentrou praticamente todos os clientes em um único grupo;
-- apresentou Silhouette Score próximo de zero ou negativo.
+* grande quantidade de registros classificados como ruído;
+* muitos clusters pequenos;
+* concentração excessiva em um único grupo;
+* Silhouette Score próximo de zero ou negativo.
 
-Por esse motivo, o modelo foi descartado.
-
----
+Por esse motivo, não foi selecionado.
 
 ### Clusterização Hierárquica
 
@@ -403,38 +395,38 @@ average
 ward
 ```
 
-Algumas configurações apresentaram Silhouette Score superior, mas geraram grupos extremamente desbalanceados, chegando a isolar apenas uma observação.
+Algumas configurações apresentaram Silhouette Score superior, mas produziram grupos extremamente desbalanceados.
 
-O método **Ward**, combinado com Kernel PCA, produziu uma divisão mais equilibrada e coerente com o objetivo do projeto.
+O método **Ward**, combinado com Kernel PCA, apresentou melhor equilíbrio entre qualidade estatística, distribuição dos grupos e interpretação de negócio.
 
 ---
 
 ## Segmentos finais
 
-Os clientes foram divididos em dois grupos:
+Os clientes foram divididos em dois grupos principais.
 
 ### Clientes de menor criticidade
 
 Apresentaram, em média:
 
-- menor atraso;
-- menos contatos com o atendimento;
-- menor número de reclamações;
-- NPS médio mais elevado.
+* menor atraso;
+* menos contatos com o atendimento;
+* menor número de reclamações;
+* NPS médio mais elevado.
 
-Esse grupo ainda possui clientes detratores, portanto a interpretação é relativa e não representa ausência de problemas.
+Esse grupo ainda possui clientes detratores, portanto a interpretação representa menor criticidade relativa e não ausência de problemas.
 
 ### Clientes de alta criticidade
 
 Apresentaram, em média:
 
-- maior atraso;
-- mais contatos com o atendimento;
-- maior recorrência de reclamações;
-- menor NPS médio;
-- maior concentração de detratores.
+* maior atraso;
+* mais contatos com o atendimento;
+* maior recorrência de reclamações;
+* menor NPS médio;
+* maior concentração de detratores.
 
-Esse grupo deve receber prioridade nas ações de recuperação e acompanhamento.
+Esse grupo representa clientes prioritários para acompanhamento e ações de recuperação.
 
 ---
 
@@ -442,22 +434,20 @@ Esse grupo deve receber prioridade nas ações de recuperação e acompanhamento
 
 O NPS não foi utilizado na formação dos clusters.
 
-Ele foi incluído posteriormente apenas para validar a interpretação dos grupos.
+Ele foi analisado posteriormente como forma de validar a interpretação dos segmentos.
 
-| Segmento | NPS médio | Detratores |
-|---|---:|---:|
-| Menor criticidade | 5,86 | 52,46% |
-| Alta criticidade | 3,29 | 90,68% |
+| Segmento          | NPS médio | Detratores |
+| ----------------- | --------: | ---------: |
+| Menor criticidade |      5,86 |     52,46% |
+| Alta criticidade  |      3,29 |     90,68% |
 
-Os resultados mostram que a clusterização não separa perfeitamente clientes satisfeitos e insatisfeitos.
-
-Ainda assim, o modelo conseguiu identificar um grupo significativamente mais vulnerável, com menor satisfação e maior concentração de problemas operacionais.
+Apesar de a clusterização não produzir separação perfeita entre clientes satisfeitos e insatisfeitos, foi possível identificar um grupo significativamente mais vulnerável e com maior concentração de problemas operacionais.
 
 ---
 
 ## Relação entre os modelos
 
-As duas abordagens são complementares.
+As duas abordagens possuem objetivos complementares.
 
 O modelo supervisionado responde:
 
@@ -469,58 +459,47 @@ A clusterização responde:
 
 A combinação permite analisar o problema em dois níveis:
 
-- **individual**, por meio da probabilidade prevista;
-- **comportamental**, por meio dos segmentos encontrados.
+* **individual**, por meio da probabilidade prevista pelo XGBoost;
+* **comportamental**, por meio dos segmentos encontrados.
 
 ---
 
 ## Aplicação Streamlit
 
-A pasta `src/` contém uma aplicação interativa para apresentação dos resultados.
+A pasta `src/` contém a aplicação interativa desenvolvida para apresentação e utilização dos resultados.
 
 A interface possui quatro páginas.
 
 ### Visão geral
 
-Apresenta:
-
-- objetivo da solução;
-- principais entregas;
-- fluxo do modelo supervisionado;
-- fluxo do modelo não supervisionado.
+Apresenta o objetivo da solução, principais entregas e fluxo dos modelos.
 
 ### Predição de detratores
 
 Permite enviar um arquivo CSV e gerar:
 
-- probabilidade de detrator;
-- nível de risco;
-- valor em risco;
-- quantidade de problemas;
-- desconto sugerido;
-- ação recomendada;
-- fila de priorização;
-- download do resultado completo.
+* probabilidade de detrator;
+* nível de risco;
+* valor em risco;
+* quantidade de problemas;
+* desconto sugerido;
+* ação recomendada;
+* fila de priorização;
+* download do resultado completo.
 
 ### Segmentação de clientes
 
 Apresenta:
 
-- quantidade de clientes em cada segmento;
-- NPS médio por grupo;
-- composição das classes de NPS;
-- perfil médio dos segmentos;
-- interpretação dos grupos;
-- principais diferenças operacionais.
+* quantidade de clientes em cada segmento;
+* NPS médio por grupo;
+* composição das classes de NPS;
+* perfil médio dos segmentos;
+* principais diferenças operacionais.
 
 ### Sobre o projeto
 
-Resume:
-
-- modelos utilizados;
-- resultados gerados;
-- tecnologias aplicadas;
-- limitações da solução.
+Resume os modelos utilizados, tecnologias, resultados e limitações da solução.
 
 ---
 
@@ -577,18 +556,20 @@ models/preprocessing/pre_processamento_clusterizacao.pkl
 
 ## Tecnologias utilizadas
 
-- Python;
-- Pandas;
-- NumPy;
-- Matplotlib;
-- Seaborn;
-- Scikit-learn;
-- SciPy;
-- Joblib;
-- Streamlit;
-- Jupyter Notebook;
-- Git;
-- GitHub.
+* Python;
+* Pandas;
+* NumPy;
+* Matplotlib;
+* Seaborn;
+* Scikit-learn;
+* XGBoost;
+* LightGBM;
+* SciPy;
+* Joblib;
+* Streamlit;
+* Jupyter Notebook;
+* Git;
+* GitHub.
 
 ---
 
@@ -606,7 +587,7 @@ Acesse a pasta:
 cd customer-intelligence
 ```
 
-Crie o ambiente virtual com Python 3.12:
+Crie o ambiente virtual com Python 3.12.
 
 ### Windows
 
@@ -657,7 +638,7 @@ Na raiz do projeto, execute:
 python -m streamlit run src/app.py
 ```
 
-A aplicação será aberta no endereço:
+A aplicação será aberta em:
 
 ```text
 http://localhost:8501
@@ -669,14 +650,15 @@ http://localhost:8501
 
 Algumas limitações devem ser consideradas:
 
-- os dados não apresentam separação natural perfeita entre os grupos;
-- os valores de Silhouette Score permaneceram baixos;
-- o segmento de menor criticidade ainda possui clientes detratores;
-- as regras de desconto e ação são simulações analíticas;
-- o valor em risco não representa perda financeira garantida;
-- o modelo hierárquico não possui inferência direta para novos clientes;
-- as recomendações precisam ser validadas de acordo com as regras reais da empresa;
-- o desempenho deve ser monitorado caso o perfil dos dados mude.
+* os dados não apresentam separação natural perfeita entre os grupos;
+* os valores de Silhouette Score permaneceram relativamente baixos;
+* o segmento de menor criticidade ainda possui clientes detratores;
+* as regras de desconto e ação são simulações analíticas;
+* o valor em risco não representa perda financeira garantida;
+* o modelo hierárquico não possui inferência direta para novos clientes;
+* a importância das features não representa relação causal;
+* as recomendações precisam ser validadas de acordo com as regras reais da empresa;
+* o desempenho dos modelos deve ser monitorado caso o perfil dos dados mude.
 
 ---
 
@@ -684,66 +666,62 @@ Algumas limitações devem ser consideradas:
 
 Evoluções futuras do projeto:
 
-- criar testes automatizados;
-- adicionar validação mais completa dos arquivos enviados;
-- incluir análise individual de clientes na aplicação;
-- criar um classificador indutivo para novos segmentos;
-- implementar monitoramento de drift;
-- adicionar rastreamento de experimentos com MLflow;
-- criar pipelines automatizados;
-- containerizar a aplicação com Docker;
-- desenvolver uma API com FastAPI;
-- integrar a solução a um banco de dados;
-- publicar a aplicação em ambiente cloud;
-- desenvolver um dashboard gerencial em Power BI;
-- validar financeiramente as estratégias de retenção.
+* criar testes automatizados;
+* adicionar validação mais completa dos arquivos enviados;
+* incluir análise individual de clientes na aplicação;
+* testar estratégias adicionais de Feature Selection;
+* comparar `feature_importances_` com Permutation Importance ou SHAP;
+* testar redução de features e reavaliar o desempenho do XGBoost;
+* criar um classificador indutivo para novos segmentos;
+* implementar monitoramento de drift;
+* adicionar rastreamento de experimentos com MLflow;
+* criar pipelines automatizados;
+* containerizar a aplicação com Docker;
+* desenvolver uma API com FastAPI;
+* integrar a solução a um banco de dados;
+* publicar a aplicação em ambiente cloud;
+* desenvolver um dashboard gerencial em Power BI;
+* validar financeiramente as estratégias de retenção.
 
 ---
 
 ## Aplicações de negócio
 
-A solução pode apoiar áreas como:
+A solução pode apoiar áreas como atendimento, logística, retenção, experiência do consumidor, relacionamento e gestão de reclamações.
 
-- atendimento ao cliente;
-- experiência do consumidor;
-- logística;
-- retenção;
-- relacionamento;
-- marketing;
-- gestão de reclamações;
-- operações;
-- planejamento comercial.
+Entre os principais usos estão:
 
-Possíveis usos:
-
-- priorização de clientes críticos;
-- monitoramento preventivo;
-- personalização de ações de recuperação;
-- redução da recorrência de problemas;
-- análise do impacto operacional sobre o NPS;
-- construção de campanhas de retenção;
-- acompanhamento do valor financeiro em risco;
-- apoio à tomada de decisão.
+* priorização de clientes críticos;
+* monitoramento preventivo;
+* personalização de ações de recuperação;
+* redução da recorrência de problemas;
+* análise do impacto operacional sobre o NPS;
+* construção de campanhas de retenção;
+* acompanhamento do valor financeiro em risco;
+* apoio à tomada de decisão.
 
 ---
 
 ## Conclusão
 
-Este projeto demonstra uma abordagem completa de Ciência de Dados aplicada à satisfação de clientes.
+Este projeto demonstra uma abordagem completa de Ciência de Dados aplicada à satisfação de clientes, integrando:
 
-Mais do que treinar modelos, a solução conecta:
+* preparação de dados;
+* análise exploratória;
+* engenharia de atributos;
+* seleção e análise de features;
+* Machine Learning supervisionado;
+* clusterização;
+* interpretação de negócio;
+* aplicação interativa.
 
-- preparação de dados;
-- análise exploratória;
-- engenharia de atributos;
-- Machine Learning;
-- clusterização;
-- interpretação de negócio;
-- aplicação interativa.
+O **XGBoost** foi selecionado como modelo supervisionado final, apresentando boa capacidade de identificação de clientes com risco de insatisfação e desempenho consistente durante a validação cruzada.
 
-O modelo supervisionado permite estimar o risco individual de insatisfação, enquanto a clusterização identifica grupos com diferentes níveis de criticidade operacional.
+A análise de importância das features também reforçou os padrões encontrados durante o EDA, destacando principalmente fatores relacionados a reclamações, atrasos e atendimento.
 
-A integração das duas abordagens oferece uma visão mais ampla da experiência do cliente e cria uma base analítica para estratégias de retenção, priorização de atendimento e melhoria contínua.
+A clusterização complementa a previsão individual ao identificar grupos com diferentes níveis de criticidade operacional.
+
+A integração das duas abordagens cria uma base analítica para estratégias de retenção, priorização de atendimento e melhoria contínua da experiência do cliente.
 
 ---
 
