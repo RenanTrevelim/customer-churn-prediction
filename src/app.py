@@ -884,7 +884,7 @@ with st.sidebar:
         """
 **Classificação**
 
-Gradient Boosting
+XGBoost + Optuna
 
 **Segmentação**
 
@@ -1007,7 +1007,7 @@ if pagina == "Visão geral":
                 <div class="flow-arrow">↓</div>
 
                 <div class="flow-step">
-                    Gradient Boosting
+                    XGBoost + Optuna
                 </div>
 
                 <div class="flow-arrow">↓</div>
@@ -1643,8 +1643,8 @@ else:
                 <h3>🎯 Modelo de classificação</h3>
 
                 <p>
-                    O Gradient Boosting estima a probabilidade
-                    de um cliente ser detrator.
+                    O XGBoost otimizado com Optuna estima
+                    a probabilidade de um cliente ser detrator.
                 </p>
 
                 <p>
