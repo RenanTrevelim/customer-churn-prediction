@@ -2,7 +2,7 @@
 
 Projeto de Ciência de Dados aplicado à satisfação de clientes em um contexto de e-commerce.
 
-A solução combina **análise exploratória, engenharia de atributos, Machine Learning supervisionado, interpretabilidade com SHAP, clusterização e aplicação em Streamlit** para identificar clientes com maior risco de insatisfação e grupos com diferentes níveis de criticidade operacional.
+A solução combina **análise exploratória, engenharia de atributos, Machine Learning supervisionado, otimização com Optuna, interpretabilidade com SHAP, clusterização e aplicação em Streamlit** para identificar clientes com maior risco de insatisfação e grupos com diferentes níveis de criticidade operacional.
 
 ---
 
@@ -14,12 +14,20 @@ O projeto foi desenvolvido para responder a duas perguntas principais:
 
 > Quais perfis de clientes apresentam padrões semelhantes de comportamento e criticidade?
 
-Para isso, foram desenvolvidas duas abordagens complementares:
+Para isso, foram construídas duas abordagens complementares:
 
-- **Classificação supervisionada:** estima o risco individual de detrator;
+- **Classificação supervisionada:** estima o risco individual de um cliente ser detrator;
 - **Clusterização:** identifica grupos de clientes com padrões operacionais semelhantes.
 
 Os resultados foram integrados a uma aplicação Streamlit para exploração das previsões, segmentos e recomendações de negócio.
+
+---
+
+## Aplicação
+
+A aplicação apresenta de forma integrada o fluxo das duas abordagens desenvolvidas no projeto.
+
+![Visão geral da aplicação](docs/images/streamlit-visao-geral.png)
 
 ---
 
@@ -71,7 +79,7 @@ Aplicação Streamlit
 ## Estrutura do projeto
 
 ```text
-customer-intelligence/
+customer-churn-prediction/
 │
 ├── data/
 │   ├── raw/
@@ -82,7 +90,7 @@ customer-intelligence/
 │
 ├── models/
 │   ├── supervised/
-│   │   └── modelo_final.pkl
+│   │   └── modelo_optuna.pkl
 │   ├── clustering/
 │   │   ├── kernel_pca_clusterizacao.pkl
 │   │   └── modelo_hierarquico_ward.pkl
@@ -94,14 +102,20 @@ customer-intelligence/
 ├── notebooks/
 │   ├── 01_entendimento_e_preparacao_dos_dados.ipynb
 │   ├── 02_analise_exploratoria_dos_dados.ipynb
-│   ├── 03_modelos_supervisionados.ipynb
-│   ├── 04_modelos_clusterizacao.ipynb
+│   ├── 03_modelo_machine_learning.ipynb
+│   ├── 04_modelos_clusterização.ipynb
 │   └── README.md
 │
 ├── src/
 │   ├── app.py
 │   ├── predict.py
 │   └── README.md
+│
+├── docs/
+│   └── images/
+│       ├── streamlit-visao-geral.png
+│       ├── streamlit-predicao.png
+│       └── streamlit-segmentacao.png
 │
 ├── .gitignore
 ├── README.md
@@ -114,38 +128,37 @@ customer-intelligence/
 
 ### 01 — Entendimento e preparação dos dados
 
-Responsável pela leitura, validação, tratamento e preparação inicial da base.
+Responsável pela leitura, validação e tratamento inicial da base.
 
 Principais etapas:
 
 - análise da estrutura dos dados;
-- verificação de tipos;
-- tratamento de valores ausentes;
-- verificação de duplicados;
-- validação de consistência;
-- geração da base tratada.
+- verificação dos tipos das variáveis;
+- identificação de valores ausentes e duplicados;
+- validação da consistência;
+- preparação da base tratada.
 
 ---
 
 ### 02 — Análise exploratória dos dados
 
-Responsável pela investigação dos principais fatores relacionados à satisfação.
+Responsável pela investigação dos principais padrões associados à satisfação.
 
 Foram analisados:
 
 - distribuição do NPS;
 - relação entre satisfação, entrega e atendimento;
 - impacto de atrasos e reclamações;
-- correlações entre variáveis;
+- correlação entre as variáveis;
 - padrões utilizados posteriormente na engenharia de atributos.
 
-Os resultados indicaram maior associação da insatisfação com **atrasos na entrega, número de reclamações, contatos com atendimento e tempo de resolução**.
+Os resultados indicaram maior associação da insatisfação com fatores relacionados a **atrasos na entrega, número de reclamações, contatos com atendimento e tempo de resolução**.
 
 ---
 
 ### 03 — Modelagem supervisionada
 
-Responsável pela classificação de clientes detratores.
+Responsável pela construção do modelo de classificação de detratores.
 
 Algoritmos avaliados:
 
@@ -158,7 +171,18 @@ Algoritmos avaliados:
 - Gradient Boosting;
 - XGBoost.
 
-O fluxo incluiu pré-processamento, Feature Selection, comparação de modelos, otimização de hiperparâmetros, validação cruzada, interpretabilidade e aplicação das probabilidades ao negócio.
+O fluxo incluiu:
+
+- definição da variável-alvo;
+- engenharia de atributos;
+- pré-processamento;
+- Feature Selection;
+- comparação de modelos;
+- otimização de hiperparâmetros;
+- validação cruzada;
+- Feature Importance;
+- interpretabilidade com SHAP;
+- aplicação das probabilidades ao negócio.
 
 ---
 
@@ -183,7 +207,7 @@ A combinação entre **Kernel PCA + Clusterização Hierárquica com método War
 
 ## Engenharia de atributos
 
-Foram criadas três variáveis derivadas com base nos padrões encontrados durante a análise exploratória:
+Foram criadas três variáveis derivadas com base nos padrões encontrados durante a análise exploratória.
 
 ### `atraso_critico`
 
@@ -212,11 +236,11 @@ O pipeline supervisionado utiliza:
 
 Após o pré-processamento, nenhuma das 20 features apresentou variância inferior ao limite definido, portanto todas foram preservadas.
 
-O pipeline foi exportado com `Joblib` para garantir consistência entre treinamento e inferência.
+O pipeline foi exportado com `Joblib` para manter consistência entre treinamento e inferência.
 
 ---
 
-## Modelagem supervisionada
+# Modelagem supervisionada
 
 A variável-alvo foi definida como:
 
@@ -251,7 +275,7 @@ O **XGBoost otimizado com Optuna em 200 trials** apresentou o melhor desempenho 
 | F1 Macro | 0,7720 |
 | ROC-AUC | 0,8881 |
 
-A escolha considerou principalmente o equilíbrio entre as classes, o alto recall e o ganho em F1 Macro e ROC-AUC.
+A escolha considerou principalmente o equilíbrio entre as classes, o alto recall e os ganhos em F1 Macro e ROC-AUC.
 
 ---
 
@@ -284,7 +308,7 @@ Entre as principais features, destacaram-se:
 - `problema_complexo`;
 - `valor_pedido`.
 
-Para aprofundar a interpretabilidade, também foi aplicado **SHAP (SHapley Additive exPlanations)** utilizando `TreeExplainer`.
+Para aprofundar a interpretação do modelo, também foi aplicado **SHAP (SHapley Additive exPlanations)** utilizando `TreeExplainer`.
 
 ### Análise global
 
@@ -294,7 +318,12 @@ Foram utilizados:
 - Summary Plot em barras;
 - Dependence Plot.
 
-Essas visualizações permitiram analisar a importância, magnitude e direção das contribuições das features.
+Essas visualizações permitiram compreender:
+
+- importância global;
+- magnitude das contribuições;
+- direção do impacto;
+- comportamento de features específicas.
 
 ### Análise local
 
@@ -303,23 +332,23 @@ Foram utilizados:
 - Waterfall Plot;
 - Force Plot.
 
-Esses gráficos permitiram explicar previsões individuais, mostrando quais características aumentaram ou reduziram a saída do modelo para cada cliente.
+Essas visualizações permitiram explicar previsões individuais e identificar quais características aumentaram ou reduziram a saída do modelo para cada cliente.
 
 O SHAP complementou a Feature Importance ao mostrar não apenas **quais variáveis são relevantes**, mas também **como e em qual direção elas influenciam as previsões**.
 
 ---
 
-## Aplicação das previsões ao negócio
+# Aplicação das previsões ao negócio
 
-As probabilidades previstas pelo XGBoost foram transformadas em indicadores para apoio à decisão.
+As probabilidades geradas pelo XGBoost foram transformadas em indicadores para apoio à tomada de decisão.
 
 A solução permite:
 
 - estimar a probabilidade de detrator;
 - classificar clientes por nível de risco;
+- contabilizar problemas operacionais;
 - estimar valor financeiro em risco;
-- identificar problemas operacionais;
-- recomendar ações de retenção;
+- sugerir ações de retenção;
 - sugerir descontos;
 - criar uma fila de priorização.
 
@@ -340,25 +369,44 @@ O indicador é calculado por:
 probabilidade de detrator × valor do pedido
 ```
 
-Esse valor funciona como um indicador de priorização e não representa uma perda financeira garantida.
+O valor funciona como uma medida de priorização e não representa uma perda financeira garantida.
 
 ---
 
-## Clusterização
+## Predição de detratores na aplicação
+
+A aplicação recebe uma base em CSV, executa o pipeline de pré-processamento e utiliza o modelo final para gerar uma visão executiva dos clientes analisados.
+
+Entre os resultados apresentados estão:
+
+- risco médio;
+- quantidade de clientes críticos;
+- distribuição por nível de risco;
+- valor financeiro em risco;
+- quantidade de problemas por cliente;
+- fila de priorização;
+- ação recomendada;
+- desconto sugerido.
+
+![Predição de detratores](docs/images/streamlit-predicao.png)
+
+---
+
+# Clusterização
 
 A análise não supervisionada foi utilizada para identificar grupos de clientes sem utilizar diretamente o NPS na formação dos clusters.
 
 ### K-Means
 
-Apresentou resultados estatisticamente interessantes, principalmente combinado ao Kernel PCA, mas com menor diferenciação entre alguns perfis.
+Apresentou resultados estatisticamente interessantes, principalmente quando combinado ao Kernel PCA, porém alguns grupos apresentaram perfis médios pouco distintos.
 
 ### DBSCAN
 
-Não identificou uma estrutura de densidade suficientemente consistente, apresentando combinações com excesso de ruído, clusters pequenos ou baixo Silhouette Score.
+Não identificou uma estrutura de densidade suficientemente consistente, apresentando configurações com excesso de ruído, clusters pequenos ou baixo Silhouette Score.
 
 ### Clusterização Hierárquica
 
-Foram comparados os métodos:
+Foram comparados:
 
 ```text
 single
@@ -367,7 +415,7 @@ average
 ward
 ```
 
-O **Ward combinado com Kernel PCA** apresentou melhor equilíbrio entre separação estatística, distribuição dos clientes e interpretação de negócio.
+O **Ward combinado com Kernel PCA** apresentou melhor equilíbrio entre qualidade estatística, distribuição dos clientes e interpretação de negócio.
 
 ---
 
@@ -394,13 +442,13 @@ Apresenta, em média:
 - menor NPS;
 - maior concentração de detratores.
 
-O grupo de menor criticidade ainda possui clientes insatisfeitos, portanto os segmentos representam **criticidade relativa**, e não uma separação direta entre satisfeitos e insatisfeitos.
+O segmento de menor criticidade ainda possui clientes insatisfeitos, portanto os grupos representam **criticidade relativa**, e não uma separação direta entre satisfeitos e insatisfeitos.
 
 ---
 
 ## Relação dos segmentos com o NPS
 
-O NPS não participou da formação dos clusters e foi utilizado posteriormente para auxiliar na validação e interpretação dos segmentos.
+O NPS não participou da formação dos clusters e foi utilizado posteriormente para auxiliar na interpretação dos grupos.
 
 | Segmento | NPS médio | Detratores |
 |---|---:|---:|
@@ -411,7 +459,23 @@ O grupo de alta criticidade apresentou concentração significativamente maior d
 
 ---
 
-## Relação entre os modelos
+## Segmentação na aplicação
+
+A aplicação apresenta uma visão comparativa dos grupos encontrados durante o treinamento.
+
+São exibidos:
+
+- quantidade de clientes por segmento;
+- NPS médio;
+- distribuição entre detratores, neutros e promotores;
+- perfil operacional médio;
+- principais diferenças entre os grupos.
+
+![Segmentação de clientes](docs/images/streamlit-segmentacao.png)
+
+---
+
+# Relação entre os modelos
 
 As duas abordagens possuem objetivos complementares.
 
@@ -430,13 +494,13 @@ Assim, a solução combina:
 
 ---
 
-## Aplicação Streamlit
+# Aplicação Streamlit
 
-A aplicação interativa está disponível em `src/app.py` e possui quatro áreas principais.
+A aplicação está disponível em `src/app.py` e possui quatro áreas principais.
 
 ### Visão geral
 
-Apresenta o objetivo, fluxo da solução e principais resultados.
+Apresenta o objetivo da solução e o fluxo dos modelos.
 
 ### Predição de detratores
 
@@ -463,7 +527,7 @@ Apresenta:
 
 ### Sobre o projeto
 
-Resume modelos, tecnologias, resultados e limitações da solução.
+Resume modelos, tecnologias e principais características da solução.
 
 ---
 
@@ -492,12 +556,12 @@ A coluna `nps` não é necessária para novas previsões.
 
 ---
 
-## Artefatos exportados
+# Artefatos exportados
 
 ### Modelo supervisionado
 
 ```text
-models/supervised/modelo_final.pkl
+models/supervised/modelo_optuna.pkl
 ```
 
 ### Clusterização
@@ -514,11 +578,11 @@ models/preprocessing/pre_processamento.pkl
 models/preprocessing/pre_processamento_clusterizacao.pkl
 ```
 
-> O `AgglomerativeClustering` não possui método `predict`, portanto o modelo Ward é utilizado como artefato analítico dos grupos encontrados durante o treinamento.
+> O `AgglomerativeClustering` não possui método `predict`, portanto o modelo Ward é utilizado como artefato analítico dos grupos formados durante o treinamento.
 
 ---
 
-## Tecnologias
+# Tecnologias
 
 - Python
 - Pandas
@@ -530,6 +594,7 @@ models/preprocessing/pre_processamento_clusterizacao.pkl
 - LightGBM
 - Optuna
 - SHAP
+- Plotly
 - SciPy
 - Joblib
 - Streamlit
@@ -539,16 +604,16 @@ models/preprocessing/pre_processamento_clusterizacao.pkl
 
 ---
 
-## Instalação
+# Instalação
 
 Clone o repositório:
 
 ```bash
 git clone <URL_DO_REPOSITORIO>
-cd customer-intelligence
+cd customer-churn-prediction
 ```
 
-Crie um ambiente virtual e instale as dependências:
+Crie o ambiente virtual:
 
 ```bash
 python -m venv .venv
@@ -566,7 +631,7 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-Instale as bibliotecas:
+Instale as dependências:
 
 ```bash
 python -m pip install --upgrade pip
@@ -575,9 +640,9 @@ pip install -r requirements.txt
 
 ---
 
-## Execução
+# Execução
 
-### Notebooks
+## Notebooks
 
 Ordem recomendada:
 
@@ -588,7 +653,7 @@ Ordem recomendada:
 04 → Clusterização
 ```
 
-### Aplicação
+## Aplicação
 
 Na raiz do projeto:
 
@@ -604,7 +669,7 @@ http://localhost:8501
 
 ---
 
-## Limitações
+# Limitações
 
 - os dados não apresentam separação natural perfeita entre os segmentos;
 - os Silhouette Scores da clusterização são moderados;
@@ -617,13 +682,13 @@ http://localhost:8501
 
 ---
 
-## Próximos passos
+# Próximos passos
 
 Possíveis evoluções:
 
 - testes automatizados;
 - validação mais robusta dos arquivos de entrada;
-- análise SHAP individual dentro da aplicação;
+- explicações SHAP individuais diretamente na aplicação;
 - monitoramento de drift;
 - rastreamento de experimentos com MLflow;
 - criação de pipelines automatizados;
@@ -636,7 +701,7 @@ Possíveis evoluções:
 
 ---
 
-## Conclusão
+# Conclusão
 
 O projeto integra diferentes etapas de um fluxo de Ciência de Dados aplicado à experiência do cliente:
 
@@ -652,7 +717,9 @@ O **XGBoost otimizado com Optuna** apresentou boa capacidade de identificação 
 
 A análise de interpretabilidade reforçou a importância de fatores relacionados a **reclamações, atrasos e atendimento**, enquanto a clusterização identificou grupos com diferentes níveis de criticidade operacional.
 
-A combinação dessas abordagens permite apoiar ações de retenção, priorização de clientes e melhoria da experiência do consumidor.
+A aplicação Streamlit transforma os resultados dos modelos em uma camada de consumo voltada à tomada de decisão, permitindo visualizar risco, prioridade financeira, ações recomendadas e perfis de clientes.
+
+A combinação dessas abordagens cria uma solução analítica capaz de apoiar estratégias de **retenção, priorização de atendimento e melhoria da experiência do consumidor**.
 
 ---
 
