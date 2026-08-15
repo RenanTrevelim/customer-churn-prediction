@@ -27,7 +27,8 @@ Os resultados foram integrados a uma aplicação Streamlit para exploração das
 
 A aplicação apresenta de forma integrada o fluxo das duas abordagens desenvolvidas no projeto.
 
-![Visão geral da aplicação](docs/images/streamlit-visao-geral.png)
+<img width="1902" height="887" alt="Captura de tela 2026-08-15 171024" src="https://github.com/user-attachments/assets/6e94ef9e-804c-4227-931f-d54e8a5bcba2" />
+
 
 ---
 
@@ -388,7 +389,8 @@ Entre os resultados apresentados estão:
 - ação recomendada;
 - desconto sugerido.
 
-![Predição de detratores](docs/images/streamlit-predicao.png)
+<img width="1905" height="894" alt="Captura de tela 2026-08-15 171104" src="https://github.com/user-attachments/assets/3b9cc992-6c8d-4d7c-b063-2cfe7ffc603b" />
+
 
 ---
 
@@ -471,7 +473,8 @@ São exibidos:
 - perfil operacional médio;
 - principais diferenças entre os grupos.
 
-![Segmentação de clientes](docs/images/streamlit-segmentacao.png)
+<img width="1906" height="893" alt="Captura de tela 2026-08-15 171121" src="https://github.com/user-attachments/assets/330196b3-8be5-48af-9b68-9c6405d26635" />
+
 
 ---
 
