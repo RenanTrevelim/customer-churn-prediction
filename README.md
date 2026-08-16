@@ -2,7 +2,7 @@
 
 Projeto de Ciência de Dados aplicado à satisfação de clientes em um contexto de e-commerce.
 
-A solução combina **análise exploratória, engenharia de atributos, Machine Learning supervisionado, otimização com Optuna, interpretabilidade com SHAP, clusterização e aplicação em Streamlit** para identificar clientes com maior risco de insatisfação e grupos com diferentes níveis de criticidade operacional.
+A solução combina **análise exploratória, engenharia de atributos, Machine Learning supervisionado, otimização com Optuna, interpretabilidade com SHAP, clusterização, aplicação em Streamlit e containerização com Docker** para identificar clientes com maior risco de insatisfação e grupos com diferentes níveis de criticidade operacional.
 
 ---
 
@@ -27,8 +27,7 @@ Os resultados foram integrados a uma aplicação Streamlit para exploração das
 
 A aplicação apresenta de forma integrada o fluxo das duas abordagens desenvolvidas no projeto.
 
-<img width="1902" height="887" alt="Captura de tela 2026-08-15 171024" src="https://github.com/user-attachments/assets/6e94ef9e-804c-4227-931f-d54e8a5bcba2" />
-
+<img width="1902" height="887" alt="Visão geral da aplicação" src="https://github.com/user-attachments/assets/6e94ef9e-804c-4227-931f-d54e8a5bcba2" />
 
 ---
 
@@ -43,7 +42,8 @@ A aplicação apresenta de forma integrada o fluxo das duas abordagens desenvolv
 - interpretar as previsões com Feature Importance e SHAP;
 - estimar risco individual e valor financeiro em risco;
 - segmentar clientes por criticidade operacional;
-- disponibilizar os resultados em uma aplicação interativa.
+- disponibilizar os resultados em uma aplicação interativa;
+- garantir reprodutibilidade da aplicação com Docker.
 
 ---
 
@@ -73,6 +73,8 @@ VarianceThreshold
 └─────────────────────────────┴─────────────────────────────┘
     ↓
 Aplicação Streamlit
+    ↓
+Container Docker
 ```
 
 ---
@@ -108,6 +110,7 @@ customer-churn-prediction/
 │   └── README.md
 │
 ├── src/
+│   ├── __init__.py
 │   ├── app.py
 │   ├── predict.py
 │   └── README.md
@@ -118,7 +121,9 @@ customer-churn-prediction/
 │       ├── streamlit-predicao.png
 │       └── streamlit-segmentacao.png
 │
+├── .dockerignore
 ├── .gitignore
+├── Dockerfile
 ├── README.md
 └── requirements.txt
 ```
@@ -319,12 +324,7 @@ Foram utilizados:
 - Summary Plot em barras;
 - Dependence Plot.
 
-Essas visualizações permitiram compreender:
-
-- importância global;
-- magnitude das contribuições;
-- direção do impacto;
-- comportamento de features específicas.
+Essas visualizações permitiram analisar importância, magnitude, direção do impacto e comportamento de features específicas.
 
 ### Análise local
 
@@ -333,7 +333,7 @@ Foram utilizados:
 - Waterfall Plot;
 - Force Plot.
 
-Essas visualizações permitiram explicar previsões individuais e identificar quais características aumentaram ou reduziram a saída do modelo para cada cliente.
+Essas visualizações permitiram explicar previsões individuais e identificar quais características aumentaram ou reduziram a saída do modelo.
 
 O SHAP complementou a Feature Importance ao mostrar não apenas **quais variáveis são relevantes**, mas também **como e em qual direção elas influenciam as previsões**.
 
@@ -389,8 +389,7 @@ Entre os resultados apresentados estão:
 - ação recomendada;
 - desconto sugerido.
 
-<img width="1905" height="894" alt="Captura de tela 2026-08-15 171104" src="https://github.com/user-attachments/assets/3b9cc992-6c8d-4d7c-b063-2cfe7ffc603b" />
-
+<img width="1905" height="894" alt="Predição de detratores" src="https://github.com/user-attachments/assets/3b9cc992-6c8d-4d7c-b063-2cfe7ffc603b" />
 
 ---
 
@@ -473,8 +472,7 @@ São exibidos:
 - perfil operacional médio;
 - principais diferenças entre os grupos.
 
-<img width="1906" height="893" alt="Captura de tela 2026-08-15 171121" src="https://github.com/user-attachments/assets/330196b3-8be5-48af-9b68-9c6405d26635" />
-
+<img width="1906" height="893" alt="Segmentação de clientes" src="https://github.com/user-attachments/assets/330196b3-8be5-48af-9b68-9c6405d26635" />
 
 ---
 
@@ -601,6 +599,7 @@ models/preprocessing/pre_processamento_clusterizacao.pkl
 - SciPy
 - Joblib
 - Streamlit
+- Docker
 - Jupyter Notebook
 - Git
 - GitHub
@@ -656,7 +655,7 @@ Ordem recomendada:
 04 → Clusterização
 ```
 
-## Aplicação
+## Streamlit
 
 Na raiz do projeto:
 
@@ -664,11 +663,39 @@ Na raiz do projeto:
 python -m streamlit run src/app.py
 ```
 
-A aplicação será disponibilizada localmente em:
+A aplicação será disponibilizada em:
 
 ```text
 http://localhost:8501
 ```
+
+---
+
+# Execução com Docker
+
+O projeto também pode ser executado em um container Docker, evitando a necessidade de configurar manualmente o ambiente Python e suas dependências.
+
+### Build da imagem
+
+Na raiz do projeto:
+
+```bash
+docker build -t customer-churn-prediction .
+```
+
+### Execução do container
+
+```bash
+docker run --rm -p 8501:8501 customer-churn-prediction
+```
+
+Após a inicialização, acesse:
+
+```text
+http://localhost:8501
+```
+
+O container utiliza **Python 3.12**, instala as dependências descritas no `requirements.txt` e inicializa automaticamente a aplicação Streamlit.
 
 ---
 
@@ -695,10 +722,10 @@ Possíveis evoluções:
 - monitoramento de drift;
 - rastreamento de experimentos com MLflow;
 - criação de pipelines automatizados;
-- containerização com Docker;
 - API com FastAPI;
 - integração com banco de dados;
 - deploy em cloud;
+- pipeline CI/CD;
 - dashboard gerencial;
 - validação financeira das estratégias de retenção.
 
@@ -714,13 +741,14 @@ O projeto integra diferentes etapas de um fluxo de Ciência de Dados aplicado à
 - otimização com Optuna;
 - interpretabilidade com Feature Importance e SHAP;
 - clusterização;
-- aplicação interativa com Streamlit.
+- aplicação interativa com Streamlit;
+- containerização com Docker.
 
 O **XGBoost otimizado com Optuna** apresentou boa capacidade de identificação de detratores e comportamento consistente durante a validação.
 
 A análise de interpretabilidade reforçou a importância de fatores relacionados a **reclamações, atrasos e atendimento**, enquanto a clusterização identificou grupos com diferentes níveis de criticidade operacional.
 
-A aplicação Streamlit transforma os resultados dos modelos em uma camada de consumo voltada à tomada de decisão, permitindo visualizar risco, prioridade financeira, ações recomendadas e perfis de clientes.
+A aplicação Streamlit transforma os resultados dos modelos em uma camada de consumo voltada à tomada de decisão, enquanto o Docker garante um ambiente padronizado e reprodutível para execução da solução.
 
 A combinação dessas abordagens cria uma solução analítica capaz de apoiar estratégias de **retenção, priorização de atendimento e melhoria da experiência do consumidor**.
 
